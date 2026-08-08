@@ -1,0 +1,48 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidRole(role) {
+      return role == 'customer' || role == 'restaurant';
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId)
+        && request.resource.data.uid == userId
+        && isValidRole(request.resource.data.role)
+        && request.resource.data.email is string;
+      allow update: if isOwner(userId)
+        && request.resource.data.uid == userId
+        && resource.data.role == request.resource.data.role;
+      allow delete: if false;
+    }
+
+    match /customerProfiles/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId)
+        && request.resource.data.uid == userId;
+      allow update: if isOwner(userId)
+        && request.resource.data.uid == userId;
+      allow delete: if false;
+    }
+
+    match /restaurantProfiles/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId)
+        && request.resource.data.uid == userId;
+      allow update: if isOwner(userId)
+        && request.resource.data.uid == userId;
+      allow delete: if false;
+    }
+  }
+}

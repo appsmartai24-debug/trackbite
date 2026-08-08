@@ -1,26 +1,68 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --trackbite-green: #16a34a;
+  --trackbite-green-dark: #15803d;
+  --trackbite-green-darker: #166534;
+  --trackbite-green-light: #dcfce7;
+  --trackbite-green-muted: #f0fdf4;
+  --trackbite-yellow: #facc15;
+  --trackbite-yellow-dark: #ca8a04;
+  --trackbite-yellow-light: #fef9c3;
+  --trackbite-white: #ffffff;
+  --trackbite-gray-50: #f9fafb;
+  --trackbite-gray-100: #f3f4f6;
+  --trackbite-gray-200: #e5e7eb;
+  --trackbite-gray-400: #9ca3af;
+  --trackbite-gray-500: #6b7280;
+  --trackbite-gray-600: #4b5563;
+  --trackbite-gray-800: #1f2937;
+  --trackbite-gray-900: #111827;
+  --trackbite-error: #dc2626;
+  --trackbite-error-light: #fef2f2;
+
+  --background: var(--trackbite-white);
+  --foreground: var(--trackbite-gray-900);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-trackbite-green: var(--trackbite-green);
+  --color-trackbite-green-dark: var(--trackbite-green-dark);
+  --color-trackbite-green-light: var(--trackbite-green-light);
+  --color-trackbite-green-muted: var(--trackbite-green-muted);
+  --color-trackbite-yellow: var(--trackbite-yellow);
+  --color-trackbite-yellow-light: var(--trackbite-yellow-light);
+  --color-trackbite-gray-50: var(--trackbite-gray-50);
+  --color-trackbite-gray-100: var(--trackbite-gray-100);
+  --color-trackbite-gray-200: var(--trackbite-gray-200);
+  --color-trackbite-gray-400: var(--trackbite-gray-400);
+  --color-trackbite-gray-500: var(--trackbite-gray-500);
+  --color-trackbite-gray-600: var(--trackbite-gray-600);
+  --color-trackbite-gray-800: var(--trackbite-gray-800);
+  --color-trackbite-error: var(--trackbite-error);
+  --color-trackbite-error-light: var(--trackbite-error-light);
+  --font-sans: var(--font-poppins);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+:focus-visible {
+  outline: 2px solid var(--trackbite-green);
+  outline-offset: 2px;
 }
