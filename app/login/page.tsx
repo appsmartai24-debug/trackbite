@@ -1,26 +1,3 @@
-// import { PageContainer } from "@/components/layout/PageContainer";
-// import { TrackbiteLogo } from "@/components/layout/TrackbiteLogo";
-// import { LoginForm } from "@/components/auth/LoginForm";
-
-// export default function LoginPage() {
-//   return (
-//     <div className="min-h-full bg-trackbite-gray-50">
-//       <PageContainer size="sm">
-//         <div className="mb-8 text-center">
-//           <TrackbiteLogo size="md" />
-//           <h1 className="mt-6 text-2xl font-bold text-trackbite-gray-900 sm:text-3xl">
-//             Welcome Back
-//           </h1>
-//           <p className="mt-2 text-trackbite-gray-600">
-//             Log in to your Trackbite account
-//           </p>
-//         </div>
-//         <LoginForm />
-//       </PageContainer>
-//     </div>
-//   );
-// }
-
 import { AuthShell } from "@/components/layout/AuthShell";
 import { LoginForm } from "@/components/auth/LoginForm";
 

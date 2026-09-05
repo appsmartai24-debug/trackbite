@@ -25,7 +25,7 @@
   --foreground: var(--trackbite-gray-900);
 }
 
-@theme inline {
+/* @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-trackbite-green: var(--trackbite-green);
@@ -45,8 +45,32 @@
   --color-trackbite-error-light: var(--trackbite-error-light);
   --font-sans: var(--font-poppins);
   --font-mono: var(--font-geist-mono);
-}
+} */
 
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-trackbite-green: var(--trackbite-green);
+  --color-trackbite-green-dark: var(--trackbite-green-dark);
+  --color-trackbite-green-darker: var(--trackbite-green-darker);
+  --color-trackbite-green-light: var(--trackbite-green-light);
+  --color-trackbite-green-muted: var(--trackbite-green-muted);
+  --color-trackbite-yellow: var(--trackbite-yellow);
+  --color-trackbite-yellow-dark: var(--trackbite-yellow-dark);
+  --color-trackbite-yellow-light: var(--trackbite-yellow-light);
+  --color-trackbite-gray-50: var(--trackbite-gray-50);
+  --color-trackbite-gray-100: var(--trackbite-gray-100);
+  --color-trackbite-gray-200: var(--trackbite-gray-200);
+  --color-trackbite-gray-400: var(--trackbite-gray-400);
+  --color-trackbite-gray-500: var(--trackbite-gray-500);
+  --color-trackbite-gray-600: var(--trackbite-gray-600);
+  --color-trackbite-gray-800: var(--trackbite-gray-800);
+  --color-trackbite-gray-900: var(--trackbite-gray-900);
+  --color-trackbite-error: var(--trackbite-error);
+  --color-trackbite-error-light: var(--trackbite-error-light);
+  --font-sans: var(--font-poppins);
+  --font-mono: var(--font-geist-mono);
+}
 * {
   box-sizing: border-box;
 }

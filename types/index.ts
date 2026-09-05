@@ -156,3 +156,12 @@ export const defaultRestaurantOnboarding: RestaurantOnboardingData = {
   cuisineType: "",
   description: "",
 };
+
+export interface Meal {
+  id: string;
+  uid: string; // customer who logged this meal
+  clearedPercent: number; // 0-100, how much of the plate was eaten
+  portionSize: "small" | "medium" | "large";
+  notes?: string; // short AI-generated note about this specific meal
+  createdAt: number; // ms epoch, set client-side for ordering
+}

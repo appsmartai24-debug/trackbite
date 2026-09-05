@@ -1,33 +1,3 @@
-// interface ProgressIndicatorProps {
-//   currentStep: number;
-//   totalSteps: number;
-// }
-
-// export function ProgressIndicator({ currentStep, totalSteps }: ProgressIndicatorProps) {
-//   const progress = (currentStep / totalSteps) * 100;
-
-//   return (
-//     <div className="mb-8">
-//       <p className="mb-2 text-sm font-medium text-trackbite-gray-600">
-//         Step {currentStep} of {totalSteps}
-//       </p>
-//       <div
-//         className="h-2 w-full overflow-hidden rounded-full bg-trackbite-gray-100"
-//         role="progressbar"
-//         aria-valuenow={currentStep}
-//         aria-valuemin={1}
-//         aria-valuemax={totalSteps}
-//         aria-label={`Step ${currentStep} of ${totalSteps}`}
-//       >
-//         <div
-//           className="h-full rounded-full bg-trackbite-green transition-all duration-300"
-//           style={{ width: `${progress}%` }}
-//         />
-//       </div>
-//     </div>
-//   );
-// }
-
 interface ProgressIndicatorProps {
   currentStep: number;
   totalSteps: number;
