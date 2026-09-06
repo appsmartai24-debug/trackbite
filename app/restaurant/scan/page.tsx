@@ -711,59 +711,116 @@ export default function RestaurantScanPage() {
   }
 
   // Starts the camera and begins decoding as soon as we're in "camera" mode.
-  useEffect(() => {
-    if (mode !== "camera") return;
-    let cancelled = false;
+  // useEffect(() => {
+  //   if (mode !== "camera") return;
+  //   let cancelled = false;
 
-    async function start() {
-      try {
-        const { Html5Qrcode } = await import("html5-qrcode");
-        if (cancelled) return;
+  //   async function start() {
+  //     try {
+  //       const { Html5Qrcode } = await import("html5-qrcode");
+  //       if (cancelled) return;
 
-        const scanner = new Html5Qrcode(READER_ID);
-        scannerRef.current = scanner;
+  //       const scanner = new Html5Qrcode(READER_ID);
+  //       scannerRef.current = scanner;
 
-        await scanner.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 240, height: 240 } },
-          (decodedText) => {
-            const uid = extractUid(decodedText);
-            if (!uid) {
-              setCameraError("That's not a Trackbite customer code. Try again.");
-              return;
-            }
-            setCameraError(null);
-            // Stop scanning as soon as we get a valid hit.
-            scanner
-              .stop()
-              .catch(() => undefined)
-              .finally(() => lookupCustomer(uid));
-          },
-          () => {
-            // Fired continuously while no code is in view — ignore.
+  //       await scanner.start(
+  //         { facingMode: "environment" },
+  //         { fps: 10, qrbox: { width: 240, height: 240 } },
+  //         (decodedText) => {
+  //           const uid = extractUid(decodedText);
+  //           if (!uid) {
+  //             setCameraError("That's not a Trackbite customer code. Try again.");
+  //             return;
+  //           }
+  //           setCameraError(null);
+  //           // Stop scanning as soon as we get a valid hit.
+  //           scanner
+  //             .stop()
+  //             .catch(() => undefined)
+  //             .finally(() => lookupCustomer(uid));
+  //         },
+  //         () => {
+  //           // Fired continuously while no code is in view — ignore.
+  //         }
+  //       );
+  //     } catch {
+  //       if (!cancelled) {
+  //         setCameraError(
+  //           "Couldn't access the camera. Check permissions, or enter the Food ID manually."
+  //         );
+  //       }
+  //     }
+  //   }
+
+  //   start();
+
+  //   return () => {
+  //     cancelled = true;
+  //     const scanner = scannerRef.current;
+  //     if (scanner) {
+  //       scanner.stop().catch(() => undefined);
+  //       scannerRef.current = null;
+  //     }
+  //   };
+  // }, [mode]);
+useEffect(() => {
+  if (mode !== "camera") return;
+  let cancelled = false;
+  let scanner: import("html5-qrcode").Html5Qrcode | null = null;
+
+  async function start() {
+    try {
+      const { Html5Qrcode } = await import("html5-qrcode");
+      if (cancelled) return;
+
+      scanner = new Html5Qrcode(READER_ID);
+      scannerRef.current = scanner;
+
+      await scanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 240, height: 240 } },
+        (decodedText) => {
+          const uid = extractUid(decodedText);
+          if (!uid) {
+            setCameraError("That's not a Trackbite customer code. Try again.");
+            return;
           }
+          setCameraError(null);
+          scanner
+            ?.stop()
+            .catch(() => undefined)
+            .finally(() => lookupCustomer(uid));
+        },
+        () => {}
+      );
+    } catch {
+      if (!cancelled) {
+        setCameraError(
+          "Couldn't access the camera. Check permissions, or enter the Food ID manually."
         );
-      } catch {
-        if (!cancelled) {
-          setCameraError(
-            "Couldn't access the camera. Check permissions, or enter the Food ID manually."
-          );
-        }
       }
     }
+  }
 
-    start();
+  start();
 
-    return () => {
-      cancelled = true;
-      const scanner = scannerRef.current;
-      if (scanner) {
-        scanner.stop().catch(() => undefined);
-        scannerRef.current = null;
-      }
-    };
-  }, [mode]);
-
+  return () => {
+    cancelled = true;
+    const activeScanner = scannerRef.current;
+    scannerRef.current = null;
+    if (activeScanner) {
+      // Wait for full stop AND clear the video element before this
+      // effect is allowed to spin up a second instance (Strict Mode
+      // double-invokes this in dev).
+      activeScanner
+        .stop()
+        .catch(() => undefined)
+        .finally(() => {
+          activeScanner.clear();
+        });
+    }
+  };
+}, [mode]);
   const handleManualLookup = () => {
     if (!manualUid.trim()) return;
     lookupCustomer(manualUid.trim());
