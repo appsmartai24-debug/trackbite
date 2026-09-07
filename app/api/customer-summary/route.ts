@@ -24,7 +24,25 @@ export async function POST(req: NextRequest) {
     if (!profileSnap.exists) {
       return NextResponse.json({ error: "Customer profile not found" }, { status: 404 });
     }
-    const profile = profileSnap.data() ?? {};
+    // const profile = profileSnap.data() ?? {};
+
+    // const mealsSnap = await adminDb
+    //   .collection("meals")
+    //   .where("uid", "==", uid)
+    //   .orderBy("createdAt", "desc")
+    //   .limit(10)
+    //   .get();
+
+    // const meals: MealDoc[] = mealsSnap.docs.map((d) => d.data() as MealDoc);
+
+    // if (meals.length === 0) {
+    //   return NextResponse.json({
+    //     summary:
+    //       "No meals tracked yet for this customer, so there isn't enough history for a summary.",
+    //   });
+    // }
+
+        const profile = profileSnap.data() ?? {};
 
     const mealsSnap = await adminDb
       .collection("meals")
@@ -35,10 +53,23 @@ export async function POST(req: NextRequest) {
 
     const meals: MealDoc[] = mealsSnap.docs.map((d) => d.data() as MealDoc);
 
+    // Build this up front so allergies/preferences always reach the
+    // restaurant, even for a brand-new customer with no meal history yet.
+    const baseFacts = {
+      dietaryPreferences: profile.dietaryPreferences ?? [],
+      allergies: profile.allergies ?? [],
+      portionPreference: profile.portionPreference ?? "medium",
+      foodGoals: profile.foodGoals ?? [],
+      mealsTracked: meals.length,
+      averageClearedPercent: 0,
+      mostCommonPortionSize: undefined as string | undefined,
+    };
+
     if (meals.length === 0) {
       return NextResponse.json({
         summary:
           "No meals tracked yet for this customer, so there isn't enough history for a summary.",
+        facts: baseFacts,
       });
     }
 
@@ -56,6 +87,7 @@ export async function POST(req: NextRequest) {
       dietaryPreferences: profile.dietaryPreferences ?? [],
       allergies: profile.allergies ?? [],
       portionPreference: profile.portionPreference ?? "medium",
+      foodGoals: profile.foodGoals ?? [],
       mealsTracked: meals.length,
       averageClearedPercent: avgCleared,
       mostCommonPortionSize: mostCommonPortion,
