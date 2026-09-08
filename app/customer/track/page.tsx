@@ -562,10 +562,36 @@ export default function CustomerTrackPage() {
     };
   }, [currentUser, justSaved]);
 
-  function readFile(file: File, slot: SlotKey) {
+  // function readFile(file: File, slot: SlotKey) {
+  //   const reader = new FileReader();
+  //   reader.onload = () => {
+  //     setImages((prev) => ({ ...prev, [slot]: reader.result as string }));
+  //   };
+  //   reader.readAsDataURL(file);
+  // }
+    function readFile(file: File, slot: SlotKey) {
     const reader = new FileReader();
     reader.onload = () => {
-      setImages((prev) => ({ ...prev, [slot]: reader.result as string }));
+      const img = new Image();
+      img.onload = () => {
+        const maxDim = 1024;
+        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          // Fallback: use the original (uncompressed) image if canvas isn't available
+          setImages((prev) => ({ ...prev, [slot]: reader.result as string }));
+          return;
+        }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.7);
+        setImages((prev) => ({ ...prev, [slot]: compressedDataUrl }));
+      };
+      img.src = reader.result as string;
     };
     reader.readAsDataURL(file);
   }
@@ -590,12 +616,32 @@ export default function CustomerTrackPage() {
     });
 
     try {
-      const res = await fetch("/api/analyze-meal", {
+      // const res = await fetch("/api/analyze-meal", {
+      //   method: "POST",
+      //   headers: { "content-type": "application/json" },
+      //   body: JSON.stringify({ beforeImage: images.before, afterImage: images.after }),
+      // });
+      // const data = await res.json();
+
+      // if (!res.ok) {
+      //   throw new Error(data.error ?? "Analysis failed");
+      // }
+            const res = await fetch("/api/analyze-meal", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ beforeImage: images.before, afterImage: images.after }),
       });
-      const data = await res.json();
+
+      let data: { error?: string } & Partial<MealResult>;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error(
+          res.status === 413
+            ? "Your photos are too large. Please try again they'll be compressed automatically."
+            : `Server error (${res.status}). Please try again.`
+        );
+      }
 
       if (!res.ok) {
         throw new Error(data.error ?? "Analysis failed");

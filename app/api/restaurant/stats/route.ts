@@ -18,16 +18,42 @@ export async function POST(req: NextRequest) {
       (sum, doc) => sum + (doc.data().points ?? 0),
       0
     );
-    const redeemedPoints = redemptionsSnap.docs.reduce(
+    // const redeemedPoints = redemptionsSnap.docs.reduce(
+    //   (sum, doc) => sum + (doc.data().pointsRedeemed ?? 0),
+    //   0
+    // );
+
+    // return NextResponse.json({
+    //   customersServed,
+    //   rewardsRedeemed: redemptionsSnap.size,
+    //   // Lifetime total, so it doesn't drop every time a reward is redeemed.
+    //   totalPointsAwarded: activePoints + redeemedPoints,
+    // });
+
+        const redeemedPoints = redemptionsSnap.docs.reduce(
       (sum, doc) => sum + (doc.data().pointsRedeemed ?? 0),
       0
     );
+
+    const recentRedemptions = redemptionsSnap.docs
+      .map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          rewardName: data.rewardName ?? "Reward",
+          pointsRedeemed: data.pointsRedeemed ?? 0,
+          redeemedAt: data.redeemedAt?.toMillis?.() ?? 0,
+        };
+      })
+      .sort((a, b) => b.redeemedAt - a.redeemedAt)
+      .slice(0, 5);
 
     return NextResponse.json({
       customersServed,
       rewardsRedeemed: redemptionsSnap.size,
       // Lifetime total, so it doesn't drop every time a reward is redeemed.
       totalPointsAwarded: activePoints + redeemedPoints,
+      recentRedemptions,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Internal error";
