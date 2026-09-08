@@ -1,8 +1,19 @@
+// import { NextRequest, NextResponse } from "next/server";
+// import { adminDb } from "@/lib/firebase/admin";
+// import { Timestamp } from "firebase-admin/firestore";
+
+// export const runtime = "nodejs";
+
 import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebase/admin";
+import { firebaseApp } from "@/lib/firebase/config";
+import { getAI, getGenerativeModel, GoogleAIBackend } from "firebase/ai";
 import { Timestamp } from "firebase-admin/firestore";
 
 export const runtime = "nodejs";
+
+const ai = getAI(firebaseApp, { backend: new GoogleAIBackend() });
+const model = getGenerativeModel(ai, { model: "gemini-3.1-flash-lite" });
 
 interface MealDoc {
   clearedPercent?: number;
@@ -93,37 +104,49 @@ export async function POST(req: NextRequest) {
       mostCommonPortionSize: mostCommonPortion,
     };
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: "Server missing ANTHROPIC_API_KEY" }, { status: 500 });
+    // const apiKey = process.env.ANTHROPIC_API_KEY;
+    // if (!apiKey) {
+    //   return NextResponse.json({ error: "Server missing ANTHROPIC_API_KEY" }, { status: 500 });
+    // }
+
+    // const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
+    //   method: "POST",
+    //   headers: {
+    //     "content-type": "application/json",
+    //     "x-api-key": apiKey,
+    //     "anthropic-version": "2023-06-01",
+    //   },
+    //   body: JSON.stringify({
+    //     model: "claude-sonnet-4-6",
+    //     max_tokens: 200,
+    //     messages: [
+    //       {
+    //         role: "user",
+    //         content: `You are helping a restaurant staff member quickly understand a returning customer, based only on the facts below. Write 2-3 short, practical sentences (no headers, no bullet points) covering things like: typical portion size, allergies/dietary needs they must respect, and how much they tend to finish. Only state what's supported by the facts — never guess or invent preferences.\n\nFacts:\n${JSON.stringify(factSheet, null, 2)}`,
+    //       },
+    //     ],
+    //   }),
+    // });
+
+    // if (!claudeRes.ok) {
+    //   const errText = await claudeRes.text();
+    //   return NextResponse.json({ error: `Claude API error: ${errText}` }, { status: 502 });
+    // }
+
+    // const data = await claudeRes.json();
+    // const summary = data.content?.find((block: { type: string }) => block.type === "text")?.text ?? "";
+
+    // return NextResponse.json({ summary, facts: factSheet });
+        let result;
+    try {
+      result = await model.generateContent(
+        `You are helping a restaurant staff member quickly understand a returning customer, based only on the facts below. Write 2-3 short, practical sentences (no headers, no bullet points) covering things like: typical portion size, allergies/dietary needs they must respect, and how much they tend to finish. Only state what's supported by the facts — never guess or invent preferences.\n\nFacts:\n${JSON.stringify(factSheet, null, 2)}`
+      );
+    } catch (err) {
+      return NextResponse.json({ error: `Gemini API error: ${(err as Error).message}` }, { status: 502 });
     }
 
-    const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 200,
-        messages: [
-          {
-            role: "user",
-            content: `You are helping a restaurant staff member quickly understand a returning customer, based only on the facts below. Write 2-3 short, practical sentences (no headers, no bullet points) covering things like: typical portion size, allergies/dietary needs they must respect, and how much they tend to finish. Only state what's supported by the facts — never guess or invent preferences.\n\nFacts:\n${JSON.stringify(factSheet, null, 2)}`,
-          },
-        ],
-      }),
-    });
-
-    if (!claudeRes.ok) {
-      const errText = await claudeRes.text();
-      return NextResponse.json({ error: `Claude API error: ${errText}` }, { status: 502 });
-    }
-
-    const data = await claudeRes.json();
-    const summary = data.content?.find((block: { type: string }) => block.type === "text")?.text ?? "";
+    const summary = result.response.text() ?? "";
 
     return NextResponse.json({ summary, facts: factSheet });
   } catch (err) {
