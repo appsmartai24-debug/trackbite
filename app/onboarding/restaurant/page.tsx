@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { TrackbiteLogo } from "@/components/layout/TrackbiteLogo";
 import { RestaurantOnboarding } from "@/components/onboarding/RestaurantOnboarding";
+import { OnboardingBanner } from "@/components/onboarding/OnboardingBanner";
 
 export default function RestaurantOnboardingPage() {
   return (
@@ -31,9 +32,13 @@ export default function RestaurantOnboardingPage() {
         </Link>
       </div>
 
-      <PageContainer size="md" className="relative py-8 sm:py-12">
+      {/* <PageContainer size="md" className="relative py-8 sm:py-12">
         <RestaurantOnboarding />
-      </PageContainer>
+      </PageContainer> */}
+      <PageContainer size="md" className="relative py-8 sm:py-12">
+  <OnboardingBanner />
+  <RestaurantOnboarding />
+</PageContainer>
     </div>
   );
 }

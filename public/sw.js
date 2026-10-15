@@ -1,4 +1,5 @@
-const CACHE_NAME = "trackbite-v1";
+// const CACHE_NAME = "trackbite-v1";
+const CACHE_NAME = "trackbite-v2";
 const PRECACHE_URLS = ["/", "/manifest.webmanifest", "/icons/icon-192.png"];
 
 self.addEventListener("install", (event) => {

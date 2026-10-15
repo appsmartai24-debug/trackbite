@@ -42,6 +42,9 @@ export async function registerUser(
       uid: user.uid,
       firstName: customerData.firstName,
       lastName: customerData.lastName,
+      heightCm: Number(customerData.heightCm),
+      weightKg: Number(customerData.weightKg),
+      wantsAppetizers: customerData.wantsAppetizers,
       dietaryPreferences: customerData.dietaryPreference === "no-preference"
         ? []
         : [customerData.dietaryPreference],

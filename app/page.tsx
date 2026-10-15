@@ -168,8 +168,109 @@
 
 
 
+// import Link from "next/link";
+// import { PageContainer } from "@/components/layout/PageContainer";
+// import { TrackbiteLogo } from "@/components/layout/TrackbiteLogo";
+// import { Button } from "@/components/ui/Button";
+// import { AuthRedirect } from "@/components/auth/AuthRedirect";
+// import { InstallTrackbite } from "@/components/pwa/InstallTrackbite";
+
+// const steps = [
+//   { number: "01", title: "Set up your profile", description: "Allergies, preferences, a QR food ID." },
+//   { number: "02", title: "Scan & snap", description: "Show your QR, photo your plate before and after." },
+//   { number: "03", title: "Earn rewards", description: "Points build at every restaurant you visit." },
+// ];
+
+// export default function WelcomePage() {
+//   return (
+//     <>
+//       <AuthRedirect />
+//       <div className="relative flex min-h-full flex-1 flex-col overflow-hidden bg-white">
+//         {/* faint dot grid + single soft glow — quiet, product-y backdrop */}
+//         <div
+//           className="pointer-events-none absolute inset-0 opacity-[0.4]"
+//           style={{
+//             backgroundImage: "radial-gradient(#e5e7eb 1px, transparent 1px)",
+//             backgroundSize: "24px 24px",
+//             maskImage: "radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%)",
+//           }}
+//           aria-hidden="true"
+//         />
+//         <div
+//           className="pointer-events-none absolute -top-32 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-trackbite-green/10 blur-[90px]"
+//           aria-hidden="true"
+//         />
+
+//         {/* top bar */}
+//         <div className="relative flex items-center justify-between px-5 py-4 sm:px-8">
+//           <TrackbiteLogo size="sm" />
+//           <Link
+//             href="/login"
+//             className="text-xs font-medium text-trackbite-gray-500 hover:text-trackbite-gray-900"
+//           >
+//             Log in
+//           </Link>
+//         </div>
+
+//         <PageContainer size="sm" className="relative flex flex-1 flex-col items-center justify-center px-6 py-10">
+//           <div className="flex w-full max-w-sm flex-col items-center text-center">
+//             <div className="inline-flex items-center gap-1.5 rounded-full border border-trackbite-gray-200 bg-white/80 px-3 py-1 text-[11px] font-medium text-trackbite-gray-600 backdrop-blur-sm">
+//               <span className="h-1.5 w-1.5 rounded-full bg-trackbite-green" />
+//               Now in early access
+//             </div>
+
+//             <h1 className="mt-5 text-[28px] font-medium leading-[1.15] tracking-tight text-trackbite-gray-900 sm:text-[32px]">
+//               Eat better.
+//               <br />
+//               <span className="text-trackbite-green">Track smarter.</span>
+//             </h1>
+
+//             <p className="mt-3 max-w-[280px] text-sm leading-relaxed text-trackbite-gray-500">
+//               A food profile and QR ID, before-and-after meal tracking, and
+//               rewards at every restaurant you visit.
+//             </p>
+
+//             <div className="mt-7 flex w-full max-w-[240px] flex-col items-center gap-3">
+//               <Link href="/onboarding" className="w-full">
+//                 <Button size="md" fullWidth>
+//                   Get Started
+//                 </Button>
+//               </Link>
+//               <p className="text-xs text-trackbite-gray-400">
+//                 No credit card needed
+//               </p>
+//             </div>
+
+//             <div className="mt-14 flex w-full flex-col gap-4 text-left">
+//               {steps.map((step) => (
+//                 <div key={step.number} className="flex items-start gap-3">
+//                   <span className="mt-0.5 font-mono text-[11px] font-medium text-trackbite-green/70">
+//                     {step.number}
+//                   </span>
+//                   <div>
+//                     <p className="text-xs font-medium text-trackbite-gray-900">{step.title}</p>
+//                     <p className="mt-0.5 text-xs leading-relaxed text-trackbite-gray-500">
+//                       {step.description}
+//                     </p>
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         </PageContainer>
+
+//         <p className="relative pb-6 text-center text-[11px] text-trackbite-gray-400">
+//           Works on mobile, tablet, and desktop
+//         </p>
+
+//         <InstallTrackbite />
+//       </div>
+//     </>
+//   );
+// }
+
+import Image from "next/image";
 import Link from "next/link";
-import { PageContainer } from "@/components/layout/PageContainer";
 import { TrackbiteLogo } from "@/components/layout/TrackbiteLogo";
 import { Button } from "@/components/ui/Button";
 import { AuthRedirect } from "@/components/auth/AuthRedirect";
@@ -185,63 +286,78 @@ export default function WelcomePage() {
   return (
     <>
       <AuthRedirect />
-      <div className="relative flex min-h-full flex-1 flex-col overflow-hidden bg-white">
-        {/* faint dot grid + single soft glow — quiet, product-y backdrop */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.4]"
-          style={{
-            backgroundImage: "radial-gradient(#e5e7eb 1px, transparent 1px)",
-            backgroundSize: "24px 24px",
-            maskImage: "radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%)",
-          }}
-          aria-hidden="true"
-        />
-        <div
-          className="pointer-events-none absolute -top-32 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-trackbite-green/10 blur-[90px]"
-          aria-hidden="true"
-        />
+      <div className="flex min-h-full flex-1 flex-col bg-white md:items-center md:bg-trackbite-gray-50 md:py-6">
+        <main className="relative mx-auto flex w-full max-w-md flex-1 flex-col overflow-hidden bg-white md:flex-none md:rounded-3xl md:shadow-xl md:ring-1 md:ring-trackbite-gray-200">
+          {/* Hero: photo background + readable content */}
+          <section className="relative flex min-h-[100svh] flex-col md:min-h-[820px]">
+            <Image
+              src="/images/welcome-bg.jpg"
+              alt=""
+              fill
+              priority
+              sizes="(min-width: 768px) 448px, 100vw"
+              className="object-cover object-top"
+            />
 
-        {/* top bar */}
-        <div className="relative flex items-center justify-between px-5 py-4 sm:px-8">
-          <TrackbiteLogo size="sm" />
-          <Link
-            href="/login"
-            className="text-xs font-medium text-trackbite-gray-500 hover:text-trackbite-gray-900"
-          >
-            Log in
-          </Link>
-        </div>
+            {/* Fades: light wash at the top (logo/login) and a white fade below the bowl (text) */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 14%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.92) 66%, #ffffff 78%)",
+              }}
+              aria-hidden="true"
+            />
 
-        <PageContainer size="sm" className="relative flex flex-1 flex-col items-center justify-center px-6 py-10">
-          <div className="flex w-full max-w-sm flex-col items-center text-center">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-trackbite-gray-200 bg-white/80 px-3 py-1 text-[11px] font-medium text-trackbite-gray-600 backdrop-blur-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-trackbite-green" />
-              Now in early access
-            </div>
-
-            <h1 className="mt-5 text-[28px] font-medium leading-[1.15] tracking-tight text-trackbite-gray-900 sm:text-[32px]">
-              Eat better.
-              <br />
-              <span className="text-trackbite-green">Track smarter.</span>
-            </h1>
-
-            <p className="mt-3 max-w-[280px] text-sm leading-relaxed text-trackbite-gray-500">
-              A food profile and QR ID, before-and-after meal tracking, and
-              rewards at every restaurant you visit.
-            </p>
-
-            <div className="mt-7 flex w-full max-w-[240px] flex-col items-center gap-3">
-              <Link href="/onboarding" className="w-full">
-                <Button size="md" fullWidth>
-                  Get Started
-                </Button>
+            {/* top bar */}
+            <div className="relative flex items-center justify-between px-5 py-4 sm:px-6">
+              <TrackbiteLogo size="sm" />
+              <Link
+                href="/login"
+                className="text-xs font-medium text-trackbite-gray-800 hover:text-trackbite-gray-900"
+              >
+                Log in
               </Link>
-              <p className="text-xs text-trackbite-gray-400">
-                No credit card needed
-              </p>
             </div>
 
-            <div className="mt-14 flex w-full flex-col gap-4 text-left">
+            {/* keeps the content clear of the bowl */}
+            <div className="min-h-[44svh] flex-1 md:min-h-[350px]" />
+
+            {/* content */}
+            <div className="relative flex flex-col items-center px-6 pb-10 text-center">
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-trackbite-gray-200 bg-white/80 px-3 py-1 text-[11px] font-medium text-trackbite-gray-600 backdrop-blur-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-trackbite-green" />
+                Now in early access
+              </div>
+
+              <h1 className="mt-5 text-[28px] font-medium leading-[1.15] tracking-tight text-trackbite-gray-900 sm:text-[32px]">
+                Eat better.
+                <br />
+                <span className="text-trackbite-green">Track smarter.</span>
+              </h1>
+
+              <p className="mt-3 max-w-[280px] text-sm leading-relaxed text-trackbite-gray-600">
+                A food profile and QR ID, before-and-after meal tracking, and
+                rewards at every restaurant you visit.
+              </p>
+
+              <div className="mt-7 flex w-full max-w-[240px] flex-col items-center gap-3">
+                <Link href="/onboarding" className="w-full">
+                  <Button size="md" fullWidth>
+                    Get Started
+                  </Button>
+                </Link>
+                <p className="text-xs text-trackbite-gray-500">No credit card needed</p>
+              </div>
+            </div>
+          </section>
+
+          {/* How it works, below the hero */}
+          <section className="px-6 pb-8 pt-2">
+            <h2 className="text-[11px] font-medium uppercase tracking-wide text-trackbite-gray-400">
+              How it works
+            </h2>
+            <div className="mt-4 flex flex-col gap-4 text-left">
               {steps.map((step) => (
                 <div key={step.number} className="flex items-start gap-3">
                   <span className="mt-0.5 font-mono text-[11px] font-medium text-trackbite-green/70">
@@ -256,12 +372,12 @@ export default function WelcomePage() {
                 </div>
               ))}
             </div>
-          </div>
-        </PageContainer>
+          </section>
 
-        <p className="relative pb-6 text-center text-[11px] text-trackbite-gray-400">
-          Works on mobile, tablet, and desktop
-        </p>
+          <p className="pb-6 text-center text-[11px] text-trackbite-gray-400">
+            Works on mobile, tablet, and desktop
+          </p>
+        </main>
 
         <InstallTrackbite />
       </div>

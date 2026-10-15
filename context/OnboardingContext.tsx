@@ -39,7 +39,16 @@ function loadState(): OnboardingState {
   if (typeof window === "undefined") return defaultState;
   try {
     const stored = sessionStorage.getItem(STORAGE_KEY);
-    if (stored) return { ...defaultState, ...JSON.parse(stored) };
+    // if (stored) return { ...defaultState, ...JSON.parse(stored) };
+    if (stored) {
+  const parsed = JSON.parse(stored);
+  return {
+    ...defaultState,
+    ...parsed,
+    customer: { ...defaultState.customer, ...parsed.customer },
+    restaurant: { ...defaultState.restaurant, ...parsed.restaurant },
+  };
+}
   } catch {
     // ignore parse errors
   }

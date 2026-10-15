@@ -454,6 +454,21 @@ export default function CustomerProfilePage() {
             )}
           </PreferenceRow>
 
+          <PreferenceRow icon={TargetIcon} label="Height & weight">
+  {profile?.heightCm != null || profile?.weightKg != null ? (
+    <>
+      {profile?.heightCm != null && <Chip label={`${profile.heightCm} cm`} />}
+      {profile?.weightKg != null && <Chip label={`${profile.weightKg} kg`} />}
+    </>
+  ) : (
+    <span className="text-xs text-trackbite-gray-400">Not added yet</span>
+  )}
+</PreferenceRow>
+
+<PreferenceRow icon={BowlIcon} label="Appetizers">
+  <Chip label={profile?.wantsAppetizers ? "Yes" : "No"} />
+</PreferenceRow>
+
           <PreferenceRow icon={BowlIcon} label="Portion size">
             <Chip label={PORTION_LABELS[profile?.portionPreference ?? "medium"]} />
           </PreferenceRow>

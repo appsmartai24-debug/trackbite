@@ -6,6 +6,9 @@ export interface CustomerProfile {
   uid: string;
   firstName: string;
   lastName: string;
+  heightCm: number | null;
+  weightKg: number | null;
+  wantsAppetizers: boolean;
   dietaryPreferences: DietaryPreference[];
   allergies: Allergy[];
   portionPreference: PortionPreference;
@@ -20,6 +23,9 @@ export async function getCustomerProfile(uid: string): Promise<CustomerProfile |
     uid,
     firstName: data.firstName ?? "",
     lastName: data.lastName ?? "",
+    heightCm: typeof data.heightCm === "number" ? data.heightCm : null,
+    weightKg: typeof data.weightKg === "number" ? data.weightKg : null,
+    wantsAppetizers: data.wantsAppetizers === true,
     dietaryPreferences: data.dietaryPreferences ?? [],
     allergies: data.allergies ?? [],
     portionPreference: data.portionPreference ?? "medium",
@@ -30,6 +36,9 @@ export async function getCustomerProfile(uid: string): Promise<CustomerProfile |
 export interface CustomerProfileUpdate {
   firstName?: string;
   lastName?: string;
+  heightCm?: number;
+  weightKg?: number;
+  wantsAppetizers?: boolean;
   dietaryPreferences?: DietaryPreference[];
   allergies?: Allergy[];
   portionPreference?: PortionPreference;
