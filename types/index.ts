@@ -25,6 +25,18 @@ export type FoodGoal =
   | "reduce-food-waste"
   | "track-meals";
 
+export type CuisineType =
+  | "italian"
+  | "chinese"
+  | "indian"
+  | "pakistani"
+  | "mexican"
+  | "japanese"
+  | "thai"
+  | "middle-eastern"
+  | "american"
+  | "mediterranean";
+
 export interface AuthUser {
   uid: string;
   email: string | null;
@@ -34,12 +46,15 @@ export interface AuthUser {
 export interface CustomerOnboardingData {
   firstName: string;
   lastName: string;
+  age: string;
   heightCm: string;
   weightKg: string;
   wantsAppetizers: boolean;
   dietaryPreference: DietaryPreference;
   allergies: Allergy[];
   portionPreference: PortionPreference;
+  favoriteCuisines: CuisineType[];
+  dislikedFoods: string;
   foodGoals: FoodGoal[];
 }
 
@@ -63,12 +78,15 @@ export interface OnboardingState {
 export const defaultCustomerOnboarding: CustomerOnboardingData = {
   firstName: "",
   lastName: "",
+  age: "",
   heightCm: "",
   weightKg: "",
   wantsAppetizers: false,
   dietaryPreference: "no-preference",
   allergies: [],
   portionPreference: "medium",
+  favoriteCuisines: [],
+  dislikedFoods: "",
   foodGoals: [],
 };
 

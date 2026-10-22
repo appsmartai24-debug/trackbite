@@ -7,20 +7,21 @@
 // import { Input } from "@/components/ui/Input";
 // import { OptionChip, OptionGroup } from "@/components/ui/OptionChip";
 // import { useOnboarding } from "@/context/OnboardingContext";
-
 // import {
 //   Allergy,
+//   CuisineType,
 //   DietaryPreference,
 //   FoodGoal,
 //   PortionPreference,
 // } from "@/types";
-// // import { validateRequired } from "@/lib/validation";
-
+// import { CUISINE_LABELS } from "@/lib/customer/profile";
 // import {
+//   validateAge,
 //   validateHeightCm,
 //   validateRequired,
 //   validateWeightKg,
 // } from "@/lib/validation";
+
 // const TOTAL_STEPS = 4;
 // const STEP_LABELS = ["Basic info", "Dietary", "Portions & goals", "Review"];
 
@@ -48,6 +49,7 @@
 //   { value: "medium", label: "Medium" },
 //   { value: "large", label: "Large" },
 // ];
+// const CUISINE_OPTIONS = Object.entries(CUISINE_LABELS) as [CuisineType, string][];
 
 // const FOOD_GOAL_OPTIONS: { value: FoodGoal; label: string }[] = [
 //   { value: "eat-healthier", label: "Eat healthier" },
@@ -96,6 +98,8 @@
 //     const lastNameError = validateRequired(customer.lastName, "Last name");
 //     if (firstNameError) nextErrors.firstName = firstNameError;
 //     if (lastNameError) nextErrors.lastName = lastNameError;
+//         const ageError = validateAge(customer.age);
+//     if (ageError) nextErrors.age = ageError;
 //     const heightError = validateHeightCm(customer.heightCm);
 //     const weightError = validateWeightKg(customer.weightKg);
 //     if (heightError) nextErrors.heightCm = heightError;
@@ -135,6 +139,13 @@
 //       }
 //     }
 //     updateCustomer({ allergies: next });
+//   };
+
+//     const toggleCuisine = (cuisine: CuisineType) => {
+//     const next = customer.favoriteCuisines.includes(cuisine)
+//       ? customer.favoriteCuisines.filter((c) => c !== cuisine)
+//       : [...customer.favoriteCuisines, cuisine];
+//     updateCustomer({ favoriteCuisines: next });
 //   };
 
 //   const toggleFoodGoal = (goal: FoodGoal) => {
@@ -178,6 +189,37 @@
 //                 error={errors.lastName}
 //                 required
 //                 autoComplete="family-name"
+//               />
+//             </div>
+
+//             <div className="grid gap-4 sm:grid-cols-2">
+//               <Input
+//                 label="Height (cm)"
+//                 name="heightCm"
+//                 type="number"
+//                 inputMode="decimal"
+//                 min={50}
+//                 max={250}
+//                 step="any"
+//                 placeholder="e.g. 170"
+//                 value={customer.heightCm}
+//                 onChange={(e) => updateCustomer({ heightCm: e.target.value })}
+//                 error={errors.heightCm}
+//                 required
+//               />
+//               <Input
+//                 label="Weight (kg)"
+//                 name="weightKg"
+//                 type="number"
+//                 inputMode="decimal"
+//                 min={10}
+//                 max={500}
+//                 step="any"
+//                 placeholder="e.g. 65"
+//                 value={customer.weightKg}
+//                 onChange={(e) => updateCustomer({ weightKg: e.target.value })}
+//                 error={errors.weightKg}
+//                 required
 //               />
 //             </div>
 //           </div>
@@ -243,6 +285,21 @@
 //               ))}
 //             </OptionGroup>
 
+//             <OptionGroup label="Would you like appetizers?">
+//               <OptionChip
+//                 label="Yes"
+//                 selected={customer.wantsAppetizers === true}
+//                 onClick={() => updateCustomer({ wantsAppetizers: true })}
+//                 type="radio"
+//               />
+//               <OptionChip
+//                 label="No"
+//                 selected={customer.wantsAppetizers === false}
+//                 onClick={() => updateCustomer({ wantsAppetizers: false })}
+//                 type="radio"
+//               />
+//             </OptionGroup>
+
 //             <OptionGroup label="Food goals" hint="Select all that apply">
 //               {FOOD_GOAL_OPTIONS.map((opt) => (
 //                 <OptionChip
@@ -275,6 +332,11 @@
 //                 onEdit={() => setStep(1)}
 //               />
 //               <ReviewRow
+//                 label="Height & weight"
+//                 value={`${customer.heightCm || "—"} cm · ${customer.weightKg || "—"} kg`}
+//                 onEdit={() => setStep(1)}
+//               />
+//               <ReviewRow
 //                 label="Dietary preference"
 //                 value={
 //                   DIETARY_OPTIONS.find((o) => o.value === customer.dietaryPreference)
@@ -299,6 +361,11 @@
 //                   PORTION_OPTIONS.find((o) => o.value === customer.portionPreference)
 //                     ?.label ?? "—"
 //                 }
+//                 onEdit={() => setStep(3)}
+//               />
+//               <ReviewRow
+//                 label="Appetizers"
+//                 value={customer.wantsAppetizers ? "Yes" : "No"}
 //                 onEdit={() => setStep(3)}
 //               />
 //               <ReviewRow
@@ -350,11 +417,14 @@ import { OptionChip, OptionGroup } from "@/components/ui/OptionChip";
 import { useOnboarding } from "@/context/OnboardingContext";
 import {
   Allergy,
+  CuisineType,
   DietaryPreference,
   FoodGoal,
   PortionPreference,
 } from "@/types";
+import { CUISINE_LABELS } from "@/lib/customer/profile";
 import {
+  validateAge,
   validateHeightCm,
   validateRequired,
   validateWeightKg,
@@ -387,6 +457,8 @@ const PORTION_OPTIONS: { value: PortionPreference; label: string }[] = [
   { value: "medium", label: "Medium" },
   { value: "large", label: "Large" },
 ];
+
+const CUISINE_OPTIONS = Object.entries(CUISINE_LABELS) as [CuisineType, string][];
 
 const FOOD_GOAL_OPTIONS: { value: FoodGoal; label: string }[] = [
   { value: "eat-healthier", label: "Eat healthier" },
@@ -435,6 +507,8 @@ export function CustomerOnboarding() {
     const lastNameError = validateRequired(customer.lastName, "Last name");
     if (firstNameError) nextErrors.firstName = firstNameError;
     if (lastNameError) nextErrors.lastName = lastNameError;
+    const ageError = validateAge(customer.age);
+    if (ageError) nextErrors.age = ageError;
     const heightError = validateHeightCm(customer.heightCm);
     const weightError = validateWeightKg(customer.weightKg);
     if (heightError) nextErrors.heightCm = heightError;
@@ -474,6 +548,13 @@ export function CustomerOnboarding() {
       }
     }
     updateCustomer({ allergies: next });
+  };
+
+  const toggleCuisine = (cuisine: CuisineType) => {
+    const next = customer.favoriteCuisines.includes(cuisine)
+      ? customer.favoriteCuisines.filter((c) => c !== cuisine)
+      : [...customer.favoriteCuisines, cuisine];
+    updateCustomer({ favoriteCuisines: next });
   };
 
   const toggleFoodGoal = (goal: FoodGoal) => {
@@ -519,6 +600,21 @@ export function CustomerOnboarding() {
                 autoComplete="family-name"
               />
             </div>
+
+            <Input
+              label="Age"
+              name="age"
+              type="number"
+              inputMode="numeric"
+              min={5}
+              max={120}
+              step={1}
+              placeholder="e.g. 28"
+              value={customer.age}
+              onChange={(e) => updateCustomer({ age: e.target.value })}
+              error={errors.age}
+              required
+            />
 
             <div className="grid gap-4 sm:grid-cols-2">
               <Input
@@ -613,6 +709,27 @@ export function CustomerOnboarding() {
               ))}
             </OptionGroup>
 
+            <OptionGroup label="Favorite cuisines" hint="Select all that apply">
+              {CUISINE_OPTIONS.map(([value, label]) => (
+                <OptionChip
+                  key={value}
+                  label={label}
+                  selected={customer.favoriteCuisines.includes(value)}
+                  onClick={() => toggleCuisine(value)}
+                  type="checkbox"
+                />
+              ))}
+            </OptionGroup>
+
+            <Input
+              label="Foods you dislike"
+              name="dislikedFoods"
+              placeholder="e.g. mushrooms, olives, cilantro"
+              hint="Separate with commas. Optional."
+              value={customer.dislikedFoods}
+              onChange={(e) => updateCustomer({ dislikedFoods: e.target.value })}
+            />
+
             <OptionGroup label="Would you like appetizers?">
               <OptionChip
                 label="Yes"
@@ -660,6 +777,11 @@ export function CustomerOnboarding() {
                 onEdit={() => setStep(1)}
               />
               <ReviewRow
+                label="Age"
+                value={customer.age || "—"}
+                onEdit={() => setStep(1)}
+              />
+              <ReviewRow
                 label="Height & weight"
                 value={`${customer.heightCm || "—"} cm · ${customer.weightKg || "—"} kg`}
                 onEdit={() => setStep(1)}
@@ -689,6 +811,20 @@ export function CustomerOnboarding() {
                   PORTION_OPTIONS.find((o) => o.value === customer.portionPreference)
                     ?.label ?? "—"
                 }
+                onEdit={() => setStep(3)}
+              />
+              <ReviewRow
+                label="Favorite cuisines"
+                value={
+                  customer.favoriteCuisines.length
+                    ? customer.favoriteCuisines.map((c) => CUISINE_LABELS[c]).join(", ")
+                    : "None specified"
+                }
+                onEdit={() => setStep(3)}
+              />
+              <ReviewRow
+                label="Foods you dislike"
+                value={customer.dislikedFoods.trim() || "None specified"}
                 onEdit={() => setStep(3)}
               />
               <ReviewRow
