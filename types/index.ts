@@ -25,6 +25,8 @@ export type FoodGoal =
   | "reduce-food-waste"
   | "track-meals";
 
+export type HungerLevel = "slightly" | "moderately" | "very";
+
 export type CuisineType =
   | "italian"
   | "chinese"
@@ -108,4 +110,6 @@ export interface Meal {
   portionSize: "small" | "medium" | "large";
   notes?: string; // short AI-generated note about this specific meal
   createdAt: number; // ms epoch, set client-side for ordering
+  beforePhotoPath?: string;
+  afterPhotoPath?: string;
 }

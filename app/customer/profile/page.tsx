@@ -207,6 +207,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { HungerSelector } from "@/components/customer/HungerSelector";
 import { useRouter } from "next/navigation";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/ui/Card";
@@ -376,6 +377,11 @@ export default function CustomerProfilePage() {
           <StatItem value={stats ? `${stats.foodSavedKg} kg` : "0 kg"} label="Food saved" />
         </div>
       </div>
+
+      {/* Hunger level for this visit (optional) — set it right before showing the Food ID */}
+      {currentUser && (
+        <HungerSelector uid={currentUser.uid} initial={profile?.currentHunger ?? null} />
+      )}
 
       {/* Food ID — a membership card, the one bold element on this page */}
       <div className="relative overflow-hidden rounded-3xl bg-trackbite-gray-900 px-6 py-6">

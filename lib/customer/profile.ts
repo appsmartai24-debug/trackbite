@@ -1,6 +1,6 @@
+
 // import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 // import { db } from "@/lib/firebase/config";
-// // import { Allergy, DietaryPreference, FoodGoal, PortionPreference } from "@/types";
 // import { Allergy, CuisineType, DietaryPreference, FoodGoal, PortionPreference } from "@/types";
 
 // export interface CustomerProfile {
@@ -113,7 +113,8 @@
 
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
-import { Allergy, CuisineType, DietaryPreference, FoodGoal, PortionPreference } from "@/types";
+import { Allergy, CuisineType, DietaryPreference, FoodGoal, HungerLevel, PortionPreference } from "@/types";
+import { freshHunger } from "@/lib/customer/hunger";
 
 export interface CustomerProfile {
   uid: string;
@@ -129,6 +130,8 @@ export interface CustomerProfile {
   favoriteCuisines: CuisineType[];
   dislikedFoods: string[];
   foodGoals: FoodGoal[];
+  /** Today's hunger level. Already null if it has expired (see HUNGER_FRESH_MS). */
+  currentHunger: HungerLevel | null;
 }
 
 export async function getCustomerProfile(uid: string): Promise<CustomerProfile | null> {
@@ -149,6 +152,10 @@ export async function getCustomerProfile(uid: string): Promise<CustomerProfile |
     favoriteCuisines: data.favoriteCuisines ?? [],
     dislikedFoods: data.dislikedFoods ?? [],
     foodGoals: data.foodGoals ?? [],
+    currentHunger: freshHunger(
+      data.currentHunger,
+      typeof data.hungerUpdatedAt?.toMillis === "function" ? data.hungerUpdatedAt.toMillis() : null
+    ),
   };
 }
 
@@ -174,6 +181,19 @@ export async function updateCustomerProfile(
   await setDoc(
     doc(db, "customerProfiles", uid),
     { ...updates, updatedAt: serverTimestamp() },
+    { merge: true }
+  );
+}
+
+/** Saves today's hunger level (or clears it with null). */
+export async function setCustomerHunger(uid: string, level: HungerLevel | null): Promise<void> {
+  await setDoc(
+    doc(db, "customerProfiles", uid),
+    {
+      currentHunger: level,
+      hungerUpdatedAt: level ? serverTimestamp() : null,
+      updatedAt: serverTimestamp(),
+    },
     { merge: true }
   );
 }

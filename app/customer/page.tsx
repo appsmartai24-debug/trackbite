@@ -8,6 +8,7 @@ import { AIBadge } from "@/components/customer/AIBadge";
 import { getRecentMeals, getMealStats, MealStats } from "@/lib/customer/meals";
 import { getCustomerProfile } from "@/lib/customer/profile";
 import { Meal } from "@/types";
+import { MealPhotoPair, useMealPhotoUrls } from "@/components/customer/MealPhotos";
 import {
   ArrowRightIcon,
   CameraIcon,
@@ -85,6 +86,8 @@ export default function CustomerHomePage() {
   const [meals, setMeals] = useState<Meal[]>([]);
   const [stats, setStats] = useState<MealStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const photoUrls = useMealPhotoUrls(meals);
+  
 
   useEffect(() => {
     if (!currentUser) return;
@@ -210,7 +213,12 @@ export default function CustomerHomePage() {
           <div className="flex flex-col divide-y divide-trackbite-gray-100 rounded-2xl border border-trackbite-gray-200 bg-white px-4 shadow-sm">
             {meals.map((meal) => (
               <div key={meal.id} className="flex items-center gap-3 py-3.5 first:pt-4 last:pb-4">
-                <MealThumb clearedPercent={meal.clearedPercent} />
+                {/* <MealThumb clearedPercent={meal.clearedPercent} /> */}
+                                <MealPhotoPair
+                  meal={meal}
+                  urls={photoUrls}
+                  fallback={<MealThumb clearedPercent={meal.clearedPercent} />}
+                />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium capitalize text-trackbite-gray-900">
                     {meal.portionSize} portion

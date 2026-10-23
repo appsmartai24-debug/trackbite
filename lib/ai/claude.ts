@@ -59,11 +59,27 @@ async function singleRequest(opts: CallOptions, apiKey: string): Promise<string>
       throw new ClaudeError(`Claude API ${res.status}: ${body.slice(0, 300)}`, res.status);
     }
 
-    const data = (await res.json()) as {
+    // const data = (await res.json()) as {
+    //   content?: { type: string; text?: string }[];
+    // };
+    // const text = data.content?.find((b) => b.type === "text")?.text;
+    // if (!text) throw new ClaudeError("Claude returned no text");
+    // return text;
+        const data = (await res.json()) as {
       content?: { type: string; text?: string }[];
+      stop_reason?: string;
     };
-    const text = data.content?.find((b) => b.type === "text")?.text;
-    if (!text) throw new ClaudeError("Claude returned no text");
+    const text = (data.content ?? [])
+      .filter((b) => b.type === "text" && typeof b.text === "string")
+      .map((b) => b.text)
+      .join("")
+      .trim();
+    if (!text) {
+      const blocks = (data.content ?? []).map((b) => b.type).join(",") || "none";
+      throw new ClaudeError(
+        `Claude returned no text (stop_reason=${data.stop_reason}, blocks=${blocks})`
+      );
+    }
     return text;
   } catch (err) {
     if (err instanceof ClaudeError) throw err;

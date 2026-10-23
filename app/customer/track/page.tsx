@@ -9,6 +9,8 @@ import { useAuth } from "@/context/AuthContext";
 import { auth } from "@/lib/firebase/config";
 import { logMeal, getRecentMeals } from "@/lib/customer/meals";
 import { Meal } from "@/types";
+import { uploadMealPhotos } from "@/lib/customer/mealPhotos";
+import { MealPhotoPair, useMealPhotoUrls } from "@/components/customer/MealPhotos";
 import {
   CameraIcon,
   CheckIcon,
@@ -428,12 +430,30 @@ export default function CustomerTrackPage() {
     setSaving(true);
     setError(null);
     try {
-      await logMeal({
+      // await logMeal({
+      //   uid: currentUser.uid,
+      //   clearedPercent: result.clearedPercent,
+      //   portionSize: result.portionSize,
+      //   notes: result.feedback,
+      // });
+      // setJustSaved(true);
+            const mealId = await logMeal({
         uid: currentUser.uid,
         clearedPercent: result.clearedPercent,
         portionSize: result.portionSize,
         notes: result.feedback,
       });
+
+      // The meal is already saved. If the photos fail to upload, the meal still
+      // counts; it just won't show thumbnails.
+      if (images.before && images.after) {
+        try {
+          await uploadMealPhotos(mealId, images.before, images.after);
+        } catch (photoErr) {
+          console.warn("meal photo upload failed", photoErr);
+        }
+      }
+
       setJustSaved(true);
       const t = setTimeout(reset, 1400);
       timers.current.push(t);
@@ -717,6 +737,7 @@ function timeAgo(ms: number): string {
 }
 
 function RecentScans({ meals, loading }: { meals: Meal[]; loading: boolean }) {
+  const photoUrls = useMealPhotoUrls(meals);
   return (
     <section>
       <h2 className="mb-3 text-sm font-semibold text-trackbite-gray-900">Recent scans</h2>
@@ -731,9 +752,18 @@ function RecentScans({ meals, loading }: { meals: Meal[]; loading: boolean }) {
               key={meal.id}
               className="flex items-center gap-3 rounded-2xl border border-trackbite-gray-200 bg-white p-3 shadow-sm"
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-trackbite-gray-50 text-trackbite-gray-400">
+              {/* <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-trackbite-gray-50 text-trackbite-gray-400">
                 <CameraIcon className="h-4 w-4" />
-              </span>
+              </span> */}
+                            <MealPhotoPair
+                meal={meal}
+                urls={photoUrls}
+                fallback={
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-trackbite-gray-50 text-trackbite-gray-400">
+                    <CameraIcon className="h-4 w-4" />
+                  </span>
+                }
+              />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium capitalize text-trackbite-gray-900">
                   {meal.portionSize} portion

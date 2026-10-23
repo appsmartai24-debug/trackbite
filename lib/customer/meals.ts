@@ -50,6 +50,8 @@ export async function getRecentMeals(uid: string, count = 10): Promise<Meal[]> {
       portionSize: data.portionSize ?? "medium",
       notes: data.notes ?? "",
       createdAt,
+      beforePhotoPath: data.beforePhotoPath ?? undefined,
+      afterPhotoPath: data.afterPhotoPath ?? undefined,
     };
   });
 }
