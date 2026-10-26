@@ -26,7 +26,8 @@ export function ProgressBar({
         .join(" ")}
     >
       <div
-        className={["h-full rounded-full bg-trackbite-green transition-[width] duration-700 ease-out", barClassName]
+        // className={["h-full rounded-full bg-trackbite-green transition-[width] duration-700 ease-out", barClassName]
+        className={["h-full rounded-full transition-[width] duration-700 ease-out", barClassName.includes("bg-") ? "" : "bg-trackbite-green", barClassName]
           .filter(Boolean)
           .join(" ")}
         style={{ width: `${pct}%` }}

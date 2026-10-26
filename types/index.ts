@@ -103,12 +103,19 @@ export const defaultRestaurantOnboarding: RestaurantOnboardingData = {
   description: "",
 };
 
+export interface MealIngredient {
+  name: string; // e.g. "Rice", "Chicken breast"
+  sharePercent: number; // 0-100, share of the original plate (all ingredients sum to 100)
+  leftPercent: number; // 0-100, how much of this ingredient was left uneaten
+}
+
 export interface Meal {
   id: string;
   uid: string; // customer who logged this meal
   clearedPercent: number; // 0-100, how much of the plate was eaten
   portionSize: "small" | "medium" | "large";
   notes?: string; // short AI-generated note about this specific meal
+  ingredients?: MealIngredient[];
   createdAt: number; // ms epoch, set client-side for ordering
   beforePhotoPath?: string;
   afterPhotoPath?: string;
