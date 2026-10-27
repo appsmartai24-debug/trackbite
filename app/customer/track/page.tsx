@@ -8,7 +8,7 @@
 // import { useAuth } from "@/context/AuthContext";
 // import { auth } from "@/lib/firebase/config";
 // import { logMeal, getRecentMeals } from "@/lib/customer/meals";
-// import { Meal } from "@/types";
+// import { Meal, MealIngredient } from "@/types";
 // import { uploadMealPhotos } from "@/lib/customer/mealPhotos";
 // import { MealPhotoPair, useMealPhotoUrls } from "@/components/customer/MealPhotos";
 // import {
@@ -72,12 +72,21 @@
 
 // interface MealResult {
 //   clearedPercent: number;
+//   leftPercent?: number;
+//   ingredients?: MealIngredient[];
 //   portionSize: "small" | "medium" | "large";
 //   feedback: string;
 //   wasteAvoidedKg: number;
 //   points: number;
 //   confidence?: "low" | "medium" | "high";
 //   dishSummary?: string;
+// }
+
+// /** Less left on the plate is better: green when almost clean, red when most is wasted. */
+// function leftBarColor(leftPercent: number): string {
+//   if (leftPercent <= 25) return "bg-trackbite-green";
+//   if (leftPercent <= 60) return "bg-trackbite-yellow";
+//   return "bg-trackbite-error";
 // }
 
 // function PhotoSlot({
@@ -430,18 +439,12 @@
 //     setSaving(true);
 //     setError(null);
 //     try {
-//       // await logMeal({
-//       //   uid: currentUser.uid,
-//       //   clearedPercent: result.clearedPercent,
-//       //   portionSize: result.portionSize,
-//       //   notes: result.feedback,
-//       // });
-//       // setJustSaved(true);
-//             const mealId = await logMeal({
+//       const mealId = await logMeal({
 //         uid: currentUser.uid,
 //         clearedPercent: result.clearedPercent,
 //         portionSize: result.portionSize,
 //         notes: result.feedback,
+//         ingredients: result.ingredients ?? [],
 //       });
 
 //       // The meal is already saved. If the photos fail to upload, the meal still
@@ -466,6 +469,7 @@
 //   }
 
 //   const bothCaptured = Boolean(images.before && images.after);
+//   const overallLeft = result ? result.leftPercent ?? 100 - result.clearedPercent : 0;
 //   const pickerLabel = pickerSlot === "before" ? "Before" : pickerSlot === "after" ? "After" : "";
 
 //   return (
@@ -662,14 +666,41 @@
 //               </div>
 
 //               <div className="rounded-2xl border border-trackbite-gray-200 bg-white p-5 shadow-sm">
+//                 {result.ingredients && result.ingredients.length > 0 && (
+//                   <div className="mb-5 flex flex-col gap-4 border-b border-trackbite-gray-100 pb-5">
+//                     <p className="text-sm font-medium text-trackbite-gray-900">Left on plate, by ingredient</p>
+//                     {result.ingredients.map((ing) => (
+//                       <div key={ing.name}>
+//                         <div className="flex items-baseline justify-between gap-3">
+//                           <p className="truncate text-sm text-trackbite-gray-800">{ing.name}</p>
+//                           <p className="shrink-0 text-sm font-semibold text-trackbite-gray-900">
+//                             {ing.leftPercent}% left
+//                           </p>
+//                         </div>
+//                         <ProgressBar
+//                           value={ing.leftPercent}
+//                           max={100}
+//                           className="mt-1.5"
+//                           barClassName={leftBarColor(ing.leftPercent)}
+//                         />
+//                       </div>
+//                     ))}
+//                   </div>
+//                 )}
+
 //                 <div className="flex items-baseline justify-between">
-//                   <p className="text-sm font-medium text-trackbite-gray-900">Plate cleared</p>
-//                   <p className="text-2xl font-semibold text-trackbite-green">{result.clearedPercent}%</p>
+//                   <p className="text-sm font-medium text-trackbite-gray-900">Overall left on plate</p>
+//                   <p className="text-2xl font-semibold text-trackbite-gray-900">{overallLeft}%</p>
 //                 </div>
-//                 <ProgressBar value={result.clearedPercent} max={100} className="mt-3" />
+//                 <ProgressBar
+//                   value={overallLeft}
+//                   max={100}
+//                   className="mt-3"
+//                   barClassName={leftBarColor(overallLeft)}
+//                 />
 //                 <div className="mt-2 flex justify-between text-[11px] text-trackbite-gray-400">
-//                   <span>Eaten {result.clearedPercent}%</span>
-//                   <span>Left on plate {100 - result.clearedPercent}%</span>
+//                   <span>Left on plate {overallLeft}%</span>
+//                   <span>Eaten {100 - overallLeft}%</span>
 //                 </div>
 //                 <p className="mt-4 border-t border-trackbite-gray-100 pt-4 text-sm leading-relaxed text-trackbite-gray-600">
 //                   {result.feedback}
@@ -752,10 +783,7 @@
 //               key={meal.id}
 //               className="flex items-center gap-3 rounded-2xl border border-trackbite-gray-200 bg-white p-3 shadow-sm"
 //             >
-//               {/* <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-trackbite-gray-50 text-trackbite-gray-400">
-//                 <CameraIcon className="h-4 w-4" />
-//               </span> */}
-//                             <MealPhotoPair
+//               <MealPhotoPair
 //                 meal={meal}
 //                 urls={photoUrls}
 //                 fallback={
@@ -769,9 +797,14 @@
 //                   {meal.portionSize} portion
 //                 </p>
 //                 <p className="text-[11px] text-trackbite-gray-400">{timeAgo(meal.createdAt)}</p>
+//                 {meal.ingredients && meal.ingredients.length > 0 && (
+//                   <p className="mt-0.5 truncate text-[11px] text-trackbite-gray-500">
+//                     {meal.ingredients.map((i) => `${i.name} ${i.leftPercent}% left`).join(" · ")}
+//                   </p>
+//                 )}
 //               </div>
 //               <span className="shrink-0 rounded-full bg-trackbite-green-light px-2 py-1 text-[11px] font-semibold text-trackbite-green-darker">
-//                 {meal.clearedPercent}%
+//                 {100 - meal.clearedPercent}% left
 //               </span>
 //             </div>
 //           ))}
@@ -783,6 +816,7 @@
 
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Button } from "@/components/ui/Button";
@@ -1562,9 +1596,10 @@ function RecentScans({ meals, loading }: { meals: Meal[]; loading: boolean }) {
       ) : (
         <div className="flex flex-col gap-2.5">
           {meals.map((meal) => (
-            <div
+            <Link
               key={meal.id}
-              className="flex items-center gap-3 rounded-2xl border border-trackbite-gray-200 bg-white p-3 shadow-sm"
+              href={`/customer/meals/${meal.id}`}
+              className="flex items-center gap-3 rounded-2xl border border-trackbite-gray-200 bg-white p-3 shadow-sm transition-all hover:border-trackbite-green/40 hover:shadow-md"
             >
               <MealPhotoPair
                 meal={meal}
@@ -1589,7 +1624,7 @@ function RecentScans({ meals, loading }: { meals: Meal[]; loading: boolean }) {
               <span className="shrink-0 rounded-full bg-trackbite-green-light px-2 py-1 text-[11px] font-semibold text-trackbite-green-darker">
                 {100 - meal.clearedPercent}% left
               </span>
-            </div>
+            </Link>
           ))}
         </div>
       )}

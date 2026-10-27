@@ -10,13 +10,14 @@
 //   getDocs,
 // } from "firebase/firestore";
 // import { db } from "@/lib/firebase/config";
-// import { Meal } from "@/types";
+// import { Meal, MealIngredient } from "@/types";
 
 // export interface LogMealInput {
 //   uid: string;
 //   clearedPercent: number;
 //   portionSize: Meal["portionSize"];
 //   notes?: string;
+//   ingredients?: MealIngredient[];
 // }
 
 // /** Writes a real meal record for the signed-in customer. */
@@ -26,6 +27,7 @@
 //     clearedPercent: input.clearedPercent,
 //     portionSize: input.portionSize,
 //     notes: input.notes ?? "",
+//     ingredients: input.ingredients ?? [],
 //     createdAt: serverTimestamp(),
 //   });
 //   return docRef.id;
@@ -49,6 +51,7 @@
 //       clearedPercent: data.clearedPercent ?? 0,
 //       portionSize: data.portionSize ?? "medium",
 //       notes: data.notes ?? "",
+//       ingredients: Array.isArray(data.ingredients) ? (data.ingredients as MealIngredient[]) : [],
 //       createdAt,
 //       beforePhotoPath: data.beforePhotoPath ?? undefined,
 //       afterPhotoPath: data.afterPhotoPath ?? undefined,
@@ -92,6 +95,8 @@ import {
   Timestamp,
   where,
   getDocs,
+  getDoc,
+  doc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { Meal, MealIngredient } from "@/types";
@@ -141,6 +146,26 @@ export async function getRecentMeals(uid: string, count = 10): Promise<Meal[]> {
       afterPhotoPath: data.afterPhotoPath ?? undefined,
     };
   });
+}
+
+/** Reads one meal by id. Returns null if it doesn't exist or belongs to someone else. */
+export async function getMealById(uid: string, mealId: string): Promise<Meal | null> {
+  const snap = await getDoc(doc(db, "meals", mealId));
+  if (!snap.exists()) return null;
+  const data = snap.data();
+  if (data.uid !== uid) return null;
+  const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toMillis() : Date.now();
+  return {
+    id: snap.id,
+    uid: data.uid,
+    clearedPercent: data.clearedPercent ?? 0,
+    portionSize: data.portionSize ?? "medium",
+    notes: data.notes ?? "",
+    ingredients: Array.isArray(data.ingredients) ? (data.ingredients as MealIngredient[]) : [],
+    createdAt,
+    beforePhotoPath: data.beforePhotoPath ?? undefined,
+    afterPhotoPath: data.afterPhotoPath ?? undefined,
+  };
 }
 
 /** Aggregate stats across all of a customer's tracked meals. */
